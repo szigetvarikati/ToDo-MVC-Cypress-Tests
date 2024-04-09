@@ -8,7 +8,7 @@
    - As a user, I want to see the number of todo items.
    - As a user, I want to see active todo items.
    - As a user, I want to see completed todo items.
-   - As a user, I want to be able delete todo items.
+   - As a user, I want to be able to edit or delete todo items.
 
 3. **Managing Todo Status:**
 
