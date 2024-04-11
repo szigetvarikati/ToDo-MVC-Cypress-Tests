@@ -10,54 +10,64 @@ describe('ToDo MVC Tests', () => {
     getInitialListLength();
   });
 
+  //check the initial data
+  it('view the initial todo list', () => {
+    verifyCountNumber(initialListLength);
+    verifyTodoItem(firstTask);
+    verifyTodoItem(secondTask);
+    verifyListLength(initialListLength);
+    verifyCountNumber(initialListLength);
+  });
+
   //user story: Adding todo item
   it('add a new todo item to the list', () => {
     const newTodoTitle = 'This is a new todo item!';
     addTodoItem(newTodoTitle);
-
-    cy.get('.todo-list li').should('have.length', initialListLength + 1);
-
-    cy.get('.todo-list li').last().should('contain.text', newTodoTitle);
+    verifyTodoItem(newTodoTitle);
+    verifyListLength(initialListLength + 1);
+    verifyCountNumber(initialListLength + 1);
   });
 
-  it('view the initial todo list', () => {
-    cy.get('.todo-list li').should('have.length', initialListLength);
-    cy.get('.todo-list li').first().should('contain.text', firstTask);
-    cy.get('.todo-list li').last().should('contain.text', secondTask);
-    verifyCountNumber(initialListLength);
-  });
-
-  //user story: view all, active and compleded todo lists
-  it(`viev All todo list`, () => {
+  //user story: view All todo list
+  it(`should viev All todo list`, () => {
     cy.get('.filters li').then((filterList) => {
       const allFilter = filterList[0].querySelector('a');
       cy.wrap(allFilter).should('have.class', 'selected');
+      verifyPageUrl('');
       verifyCountNumber(initialListLength);
+      verifySelectedClass('All');
     });
   });
 
+  //user story: view Active todo list
   it('should navigate to Active todo list az view it', () => {
     cy.contains('Active').click();
-    cy.url().should('include', '/#/active');
+    verifyPageUrl('/active');
 
     cy.get('.todo-list li').each((todoItem) => {
       cy.wrap(todoItem).within(() => {
         cy.get('.toggle').should('not.be.checked');
       });
       verifyCountNumber(initialListLength);
+      verifySelectedClass('Active');
     });
   });
 
+  //user story: view Completed todo list
   it('should navigate to Completed todo list and view it', () => {
     cy.contains('Completed').click();
-    cy.url().should('include', '/#/completed');
-
+    verifyPageUrl('/completed');
     cy.get('.todo-list li').should('have.length', 0);
+
+    ////should be an other test for managing todo status user story
     cy.get('.toggle-all').click();
-    cy.get('.todo-list li').should('have.length', initialListLength);
+    verifyListLength(initialListLength);
     verifyCountNumber(0);
+    verifySelectedClass('Completed');
   });
 
+
+  //functions
   function addTodoItem(title) {
     cy.get('.new-todo').type(`${title}{enter}`);
   }
@@ -72,5 +82,21 @@ describe('ToDo MVC Tests', () => {
 
   function verifyCountNumber(expectedCount) {
     cy.get('.todo-count strong').should('have.text', expectedCount);
+  }
+
+  function verifyTodoItem(title) {
+    cy.get('.todo-list').should('contain.text', title);
+  }
+
+  function verifyPageUrl(expectedUrl) {
+    cy.url().should('include', expectedUrl);
+  }
+
+  function verifyListLength(expectedLength) {
+    cy.get('.todo-list li').should('have.length', expectedLength);
+  }
+
+  function verifySelectedClass(filterName) {
+    cy.contains('.filters li a', filterName).should('have.class', 'selected');
   }
 });
