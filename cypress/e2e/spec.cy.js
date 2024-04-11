@@ -28,7 +28,7 @@ describe('ToDo MVC Tests', () => {
     verifyCountNumber(initialListLength + 1);
   });
 
-  //user story: view all, active and compleded todo lists
+  //user story: view All todo list
   it(`should viev All todo list`, () => {
     cy.get('.filters li').then((filterList) => {
       const allFilter = filterList[0].querySelector('a');
@@ -39,6 +39,7 @@ describe('ToDo MVC Tests', () => {
     });
   });
 
+  //user story: view Active todo list
   it('should navigate to Active todo list az view it', () => {
     cy.contains('Active').click();
     verifyPageUrl('/active');
@@ -52,17 +53,21 @@ describe('ToDo MVC Tests', () => {
     });
   });
 
+  //user story: view Completed todo list
   it('should navigate to Completed todo list and view it', () => {
     cy.contains('Completed').click();
     verifyPageUrl('/completed');
-
     cy.get('.todo-list li').should('have.length', 0);
+
+    ////should be an other test for managing todo status user story
     cy.get('.toggle-all').click();
     verifyListLength(initialListLength);
     verifyCountNumber(0);
     verifySelectedClass('Completed');
   });
 
+
+  //functions
   function addTodoItem(title) {
     cy.get('.new-todo').type(`${title}{enter}`);
   }
