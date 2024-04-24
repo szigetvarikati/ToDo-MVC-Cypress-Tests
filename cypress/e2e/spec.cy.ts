@@ -6,6 +6,14 @@ import {
   FILTER_COMPLETED,
 } from '@fixtures/constants';
 
+import {
+  addTodoItem,
+  deleteTodoItem,
+  editTitleOfATodoItem,
+  setTodoComplete,
+  setTodoIncomplete,
+} from '@fixtures/todoManipulation';
+
 describe('ToDo MVC Tests', () => {
   let testData: string[];
   let initialListLength: number;
@@ -102,6 +110,7 @@ describe('ToDo MVC Tests', () => {
       const todoTitle: string = testData[0];
       setTodoComplete(todoTitle);
       verifyTodoItemIsCompleted(todoTitle);
+      verifyClearCompletedButtonIsAppaered();
       verifyNumberOfLeftItems(initialListLength - 1);
       verifyTodoListInView(FILTER_COMPLETED, [`${todoTitle}`]);
     });
@@ -130,33 +139,6 @@ describe('ToDo MVC Tests', () => {
   });
 
   //helper functions
-  function addTodoItem(title: string) {
-    cy.get('.new-todo').type(`${title}{enter}`);
-  }
-
-  function deleteTodoItem(title: string) {
-    cy.contains('.todo-list li', title).within(() => {
-      cy.get('.destroy').click({ force: true });
-    });
-  }
-
-  function editTitleOfATodoItem(oldTitle: string, newTitle: string) {
-    cy.contains('.todo-list li', oldTitle).dblclick();
-    cy.get('.todo-list li.editing .edit').clear().type(`${newTitle}{enter}`);
-  }
-
-  function setTodoComplete(title: string) {
-    cy.contains('.todo-list li', title).within(() => {
-      cy.get('.toggle').click();
-    });
-  }
-
-  function setTodoIncomplete(title: string) {
-    cy.contains('.todo-list li.completed', title).within(() => {
-      cy.get('.toggle').click();
-    });
-  }
-
   function clearCompletedTodos() {
     cy.contains('Clear completed').click();
   }
@@ -209,5 +191,9 @@ describe('ToDo MVC Tests', () => {
     notExpectedTodoItems.forEach((todoItem) => {
       verifyTodoItemDoesNotExist(todoItem);
     });
+  }
+
+  function verifyClearCompletedButtonIsAppaered() {
+    cy.contains('Clear completed').should('be.visible');
   }
 });
