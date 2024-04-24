@@ -69,11 +69,11 @@ Follow the guide below to install and run the application.
 1. Requirements: Make sure Node.js is installed on your computer.
 2. Clone the repository
    ```sh
-   git clone https://github.com/szigetvarikat/Cypress_Basics.git
+   git clone https://github.com/szigetvarikat/ToDo-MVC-Cypress-Tests.git
    ```
 2. Navigate to the folder
    ```sh
-   cd Cypress_Basics
+   cd ToDo-MVC-Cypress-Tests
    ```
 3. Open the project
 4. Install dependencies
@@ -101,7 +101,7 @@ Follow the guide below to install and run the application.
 
 Katalin Szigetvári - szigetvarikati@gmail.com
 
-Project Link: https://github.com/szigetvarikati/Cypress_Basics
+Project Link: https://github.com/szigetvarikati/ToDo-MVC-Cypress-Tests
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
