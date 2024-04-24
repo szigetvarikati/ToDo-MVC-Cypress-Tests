@@ -6,6 +6,35 @@ import {
   FILTER_COMPLETED,
 } from '@fixtures/constants';
 
+import {
+  addTodoItem,
+  deleteTodoItem,
+  editTitleOfATodoItem,
+  setTodoComplete,
+  setTodoIncomplete,
+  verifySelectedClass,
+} from '@fixtures/todoManipulation';
+
+import {
+  verifyListLength,
+  verifyNumberOfLeftItems,
+  verifyPageUrl,
+} from '@fixtures/generalUtils';
+
+import {
+  verifyTodoItem,
+  verifyTodoItemDoesNotExist,
+  verifyTodoItemIsCompleted,
+  verifyTodoItemIsIncomplete,
+  verifyTodoListInView,
+  verifyTodoItemIsNotInSelectedList,
+} from '@fixtures/viewingTodoLists';
+
+import {
+  clearCompletedTodos,
+  verifyClearCompletedButtonIsAppaered,
+} from '@fixtures/clearCompletedUtils';
+
 describe('ToDo MVC Tests', () => {
   let testData: string[];
   let initialListLength: number;
@@ -102,6 +131,7 @@ describe('ToDo MVC Tests', () => {
       const todoTitle: string = testData[0];
       setTodoComplete(todoTitle);
       verifyTodoItemIsCompleted(todoTitle);
+      verifyClearCompletedButtonIsAppaered();
       verifyNumberOfLeftItems(initialListLength - 1);
       verifyTodoListInView(FILTER_COMPLETED, [`${todoTitle}`]);
     });
@@ -118,7 +148,7 @@ describe('ToDo MVC Tests', () => {
       setTodoComplete(todoTitle);
       verifyTodoListInView(FILTER_COMPLETED, [todoTitle]);
       verifyTodoListInView(FILTER_ALL, [todoTitle]);
-      verifyTodoListNotInView(FILTER_ACTIVE, [todoTitle]);
+      verifyTodoItemIsNotInSelectedList(FILTER_ACTIVE, [todoTitle]);
     });
 
     it('deleting a completed todo item', () => {
@@ -128,86 +158,4 @@ describe('ToDo MVC Tests', () => {
       verifyTodoItemDoesNotExist(todoTitle);
     });
   });
-
-  //helper functions
-  function addTodoItem(title: string) {
-    cy.get('.new-todo').type(`${title}{enter}`);
-  }
-
-  function deleteTodoItem(title: string) {
-    cy.contains('.todo-list li', title).within(() => {
-      cy.get('.destroy').click({ force: true });
-    });
-  }
-
-  function editTitleOfATodoItem(oldTitle: string, newTitle: string) {
-    cy.contains('.todo-list li', oldTitle).dblclick();
-    cy.get('.todo-list li.editing .edit').clear().type(`${newTitle}{enter}`);
-  }
-
-  function setTodoComplete(title: string) {
-    cy.contains('.todo-list li', title).within(() => {
-      cy.get('.toggle').click();
-    });
-  }
-
-  function setTodoIncomplete(title: string) {
-    cy.contains('.todo-list li.completed', title).within(() => {
-      cy.get('.toggle').click();
-    });
-  }
-
-  function clearCompletedTodos() {
-    cy.contains('Clear completed').click();
-  }
-
-  function verifyNumberOfLeftItems(expectedCount: number) {
-    cy.get('.todo-count strong').should('have.text', expectedCount);
-  }
-
-  function verifyTodoItem(title: string) {
-    cy.get('.todo-list').should('contain.text', title);
-  }
-
-  function verifyPageUrl(expectedUrl: string) {
-    cy.url().should('include', expectedUrl);
-  }
-
-  function verifyListLength(expectedLength: number) {
-    cy.get('.todo-list li').should('have.length', expectedLength);
-  }
-
-  function verifySelectedClass(filterName: string) {
-    cy.contains('.filters li a', filterName).should('have.class', 'selected');
-  }
-
-  function verifyTodoItemDoesNotExist(title: string) {
-    cy.get('.todo-list').should('not.contain', title);
-  }
-
-  function verifyTodoItemIsCompleted(title: string) {
-    cy.contains('.todo-list li.completed', title).should('exist');
-  }
-
-  function verifyTodoItemIsIncomplete(title: string) {
-    cy.contains('.todo-list li', title).should('exist');
-    cy.contains('.todo-list li.completed', title).should('not.exist');
-  }
-
-  function verifyTodoListInView(viewName: string, expectedTodoItems: string[]) {
-    cy.contains(viewName).click();
-    expectedTodoItems.forEach((todoItem) => {
-      verifyTodoItem(todoItem);
-    });
-  }
-
-  function verifyTodoListNotInView(
-    viewName: string,
-    notExpectedTodoItems: string[]
-  ) {
-    cy.contains(viewName).click();
-    notExpectedTodoItems.forEach((todoItem) => {
-      verifyTodoItemDoesNotExist(todoItem);
-    });
-  }
 });

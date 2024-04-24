@@ -10,6 +10,6 @@
       "@fixtures/*": ["cypress/fixtures/*"]
     }
   },
-  "include": ["cypress/e2e/**/*.ts"],
+  "include": ["cypress/**/*.ts"],
   "exclude": ["node_modules"]
 }
