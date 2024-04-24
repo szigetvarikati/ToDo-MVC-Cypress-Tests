@@ -69,7 +69,7 @@ Follow the guide below to install and run the application.
 1. Requirements: Make sure Node.js is installed on your computer.
 2. Clone the repository
    ```sh
-   git clone https://github.com/szigetvarikat/ToDo-MVC-Cypress-Tests.git
+   git clone https://github.com/szigetvarikati/ToDo-MVC-Cypress-Tests.git
    ```
 2. Navigate to the folder
    ```sh
@@ -90,7 +90,7 @@ Follow the guide below to install and run the application.
 2. Run tests in the Cypress applicaion that opens, select the spec.cy.ts file and click to run the tests.
 3. Or run tests from terminal with the following command:
    ```sh
-   npy cyypress run
+   npy cypress run
    ```
    
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
