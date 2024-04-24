@@ -1,7 +1,7 @@
 describe('ToDo MVC Tests', () => {
-  const firstTask = 'This is my first task on my list';
-  const secondTask = 'Second one';
-  let initialListLength;
+  const firstTask: string = 'This is my first task on my list';
+  const secondTask: string = 'Second one';
+  let initialListLength: number;
 
   beforeEach(() => {
     cy.visit('/');
@@ -24,7 +24,7 @@ describe('ToDo MVC Tests', () => {
   //user story: Adding todo item
   describe('Todo Item Manipulation', () => {
     it('add a new todo item to the list', () => {
-      const newTodoTitle = 'This is a new todo item!';
+      const newTodoTitle: string = 'This is a new todo item!';
       addTodoItem(newTodoTitle);
       verifyTodoItem(newTodoTitle);
       verifyListLength(initialListLength + 1);
@@ -32,7 +32,7 @@ describe('ToDo MVC Tests', () => {
     });
 
     it('edit a title of a todo item', () => {
-      const newTitle = 'This is the modified title';
+      const newTitle: string = 'This is the modified title';
       editTitleOfATodoItem(firstTask, newTitle);
       verifyTodoItem(newTitle);
       verifyTodoItemDoesNotExist(firstTask);
@@ -51,7 +51,7 @@ describe('ToDo MVC Tests', () => {
   describe('Viewing Todo Lists', () => {
     //user story: view All todo list
     it(`should viev All todo list`, () => {
-      cy.get('.filters li').then((filterList) => {
+      cy.get('.filters li').then((filterList : JQuery<HTMLElement>) => {
         const allFilter = filterList[0].querySelector('a');
         cy.wrap(allFilter).should('have.class', 'selected');
         verifyPageUrl('');
@@ -65,7 +65,7 @@ describe('ToDo MVC Tests', () => {
       cy.contains('Active').click();
       verifyPageUrl('/active');
 
-      cy.get('.todo-list li').each((todoItem) => {
+      cy.get('.todo-list li').each((todoItem : string) => {
         cy.wrap(todoItem).within(() => {
           cy.get('.toggle').should('not.be.checked');
         });
@@ -90,7 +90,7 @@ describe('ToDo MVC Tests', () => {
 
   describe('Managing Todo Status', () => {
     it('marking a todo item as completed', () => {
-      const todoTitle = firstTask;
+      const todoTitle: string = firstTask;
       setTodoComplete(todoTitle);
       verifyTodoItemIsCompleted(todoTitle);
       verifyNumberOfLeftItems(initialListLength - 1);
@@ -98,14 +98,14 @@ describe('ToDo MVC Tests', () => {
     });
 
     it('marking a todo item as incompleted', () => {
-      const todoTitle = firstTask;
+      const todoTitle: string = firstTask;
       setTodoComplete(todoTitle);
       setTodoIncomplete(todoTitle);
       verifyTodoItemIsIncomplete(todoTitle);
     });
 
     it('should move completed todo to "Completed" list', () => {
-      const todoTitle = firstTask;
+      const todoTitle: string = firstTask;
       setTodoComplete(todoTitle);
       verifyTodoListInView('Completed', [todoTitle]);
       verifyTodoListInView('All', [todoTitle]);
@@ -113,7 +113,7 @@ describe('ToDo MVC Tests', () => {
     });
 
     it('deleting a completed todo item', () => {
-      const todoTitle = secondTask;
+      const todoTitle: string = secondTask;
       setTodoComplete(todoTitle);
       clearCompletedTodos();
       verifyTodoItemDoesNotExist(todoTitle);
@@ -121,11 +121,11 @@ describe('ToDo MVC Tests', () => {
   });
 
   //helper functions
-  function addTodoItem(title) {
+  function addTodoItem(title: string) {
     cy.get('.new-todo').type(`${title}{enter}`);
   }
 
-  function deleteTodoItem(title) {
+  function deleteTodoItem(title: string) {
     cy.contains('.todo-list li', title).within(() => {
       cy.get('.destroy').click({ force: true });
     });
@@ -134,23 +134,23 @@ describe('ToDo MVC Tests', () => {
   function getInitialListLength() {
     cy.get('.todo-list li')
       .its('length')
-      .then((length) => {
+      .then((length: number) => {
         initialListLength = length;
       });
   }
 
-  function editTitleOfATodoItem(oldTitle, newTitle) {
+  function editTitleOfATodoItem(oldTitle: string, newTitle: string) {
     cy.contains('.todo-list li', oldTitle).dblclick();
     cy.get('.todo-list li.editing .edit').clear().type(`${newTitle}{enter}`);
   }
 
-  function setTodoComplete(title) {
+  function setTodoComplete(title: string) {
     cy.contains('.todo-list li', title).within(() => {
       cy.get('.toggle').click();
     });
   }
 
-  function setTodoIncomplete(title) {
+  function setTodoIncomplete(title: string) {
     cy.contains('.todo-list li.completed', title).within(() => {
       cy.get('.toggle').click();
     });
@@ -160,47 +160,50 @@ describe('ToDo MVC Tests', () => {
     cy.contains('Clear completed').click();
   }
 
-  function verifyNumberOfLeftItems(expectedCount) {
+  function verifyNumberOfLeftItems(expectedCount: number) {
     cy.get('.todo-count strong').should('have.text', expectedCount);
   }
 
-  function verifyTodoItem(title) {
+  function verifyTodoItem(title: string) {
     cy.get('.todo-list').should('contain.text', title);
   }
 
-  function verifyPageUrl(expectedUrl) {
+  function verifyPageUrl(expectedUrl: string) {
     cy.url().should('include', expectedUrl);
   }
 
-  function verifyListLength(expectedLength) {
+  function verifyListLength(expectedLength: number) {
     cy.get('.todo-list li').should('have.length', expectedLength);
   }
 
-  function verifySelectedClass(filterName) {
+  function verifySelectedClass(filterName: string) {
     cy.contains('.filters li a', filterName).should('have.class', 'selected');
   }
 
-  function verifyTodoItemDoesNotExist(title) {
+  function verifyTodoItemDoesNotExist(title: string) {
     cy.get('.todo-list').should('not.contain', title);
   }
 
-  function verifyTodoItemIsCompleted(title) {
+  function verifyTodoItemIsCompleted(title: string) {
     cy.contains('.todo-list li.completed', title).should('exist');
   }
 
-  function verifyTodoItemIsIncomplete(title) {
+  function verifyTodoItemIsIncomplete(title: string) {
     cy.contains('.todo-list li', title).should('exist');
     cy.contains('.todo-list li.completed', title).should('not.exist');
   }
 
-  function verifyTodoListInView(viewName, expectedTodoItems) {
+  function verifyTodoListInView(viewName: string, expectedTodoItems: string[]) {
     cy.contains(viewName).click();
     expectedTodoItems.forEach((todoItem) => {
       verifyTodoItem(todoItem);
     });
   }
 
-  function verifyTodoListNotInView(viewName, notExpectedTodoItems) {
+  function verifyTodoListNotInView(
+    viewName: string,
+    notExpectedTodoItems: string[]
+  ) {
     cy.contains(viewName).click();
     notExpectedTodoItems.forEach((todoItem) => {
       verifyTodoItemDoesNotExist(todoItem);
