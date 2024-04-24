@@ -1,21 +1,32 @@
+import {
+  NEW_TODO_TITLE,
+  MODIFIED_TITLE,
+  FILTER_ALL,
+  FILTER_ACTIVE,
+  FILTER_COMPLETED,
+} from '@fixtures/constants';
+
 describe('ToDo MVC Tests', () => {
-  const firstTask: string = 'This is my first task on my list';
-  const secondTask: string = 'Second one';
+  let testData: string[];
   let initialListLength: number;
 
   beforeEach(() => {
-    cy.visit('/');
-    addTodoItem(firstTask);
-    addTodoItem(secondTask);
-    getInitialListLength();
+    cy.fixture('testdata').then((data: string[]) => {
+      testData = data;
+      initialListLength = data.length;
+      cy.visit('/');
+      testData.forEach((task: string) => {
+        addTodoItem(task);
+      });
+    });
   });
 
   //check the initial data
   describe('Initial Data', () => {
     it('view the initial todo list', () => {
-      verifyNumberOfLeftItems(initialListLength);
-      verifyTodoItem(firstTask);
-      verifyTodoItem(secondTask);
+      testData.forEach((task: string) => {
+        verifyTodoItem(task);
+      });
       verifyListLength(initialListLength);
       verifyNumberOfLeftItems(initialListLength);
     });
@@ -24,25 +35,23 @@ describe('ToDo MVC Tests', () => {
   //user story: Adding todo item
   describe('Todo Item Manipulation', () => {
     it('add a new todo item to the list', () => {
-      const newTodoTitle: string = 'This is a new todo item!';
-      addTodoItem(newTodoTitle);
-      verifyTodoItem(newTodoTitle);
+      addTodoItem(NEW_TODO_TITLE);
+      verifyTodoItem(NEW_TODO_TITLE);
       verifyListLength(initialListLength + 1);
       verifyNumberOfLeftItems(initialListLength + 1);
     });
 
     it('edit a title of a todo item', () => {
-      const newTitle: string = 'This is the modified title';
-      editTitleOfATodoItem(firstTask, newTitle);
-      verifyTodoItem(newTitle);
-      verifyTodoItemDoesNotExist(firstTask);
+      editTitleOfATodoItem(testData[0], MODIFIED_TITLE);
+      verifyTodoItem(MODIFIED_TITLE);
+      verifyTodoItemDoesNotExist(testData[0]);
       verifyListLength(initialListLength);
       verifyNumberOfLeftItems(initialListLength);
     });
 
     it('delete a todo item from the list', () => {
-      deleteTodoItem(firstTask);
-      verifyTodoItemDoesNotExist(firstTask);
+      deleteTodoItem(testData[0]);
+      verifyTodoItemDoesNotExist(testData[0]);
       verifyListLength(initialListLength - 1);
       verifyNumberOfLeftItems(initialListLength - 1);
     });
@@ -50,13 +59,13 @@ describe('ToDo MVC Tests', () => {
 
   describe('Viewing Todo Lists', () => {
     //user story: view All todo list
-    it(`should viev All todo list`, () => {
-      cy.get('.filters li').then((filterList : JQuery<HTMLElement>) => {
+    it(`should view All todo list`, () => {
+      cy.get('.filters li').then((filterList: JQuery<HTMLElement>) => {
         const allFilter = filterList[0].querySelector('a');
         cy.wrap(allFilter).should('have.class', 'selected');
         verifyPageUrl('');
         verifyNumberOfLeftItems(initialListLength);
-        verifySelectedClass('All');
+        verifySelectedClass(FILTER_ALL);
       });
     });
 
@@ -65,12 +74,12 @@ describe('ToDo MVC Tests', () => {
       cy.contains('Active').click();
       verifyPageUrl('/active');
 
-      cy.get('.todo-list li').each((todoItem : string) => {
+      cy.get('.todo-list li').each((todoItem: string) => {
         cy.wrap(todoItem).within(() => {
           cy.get('.toggle').should('not.be.checked');
         });
         verifyNumberOfLeftItems(initialListLength);
-        verifySelectedClass('Active');
+        verifySelectedClass(FILTER_ACTIVE);
       });
     });
 
@@ -84,36 +93,36 @@ describe('ToDo MVC Tests', () => {
       cy.get('.toggle-all').click();
       verifyListLength(initialListLength);
       verifyNumberOfLeftItems(0);
-      verifySelectedClass('Completed');
+      verifySelectedClass(FILTER_COMPLETED);
     });
   });
 
   describe('Managing Todo Status', () => {
     it('marking a todo item as completed', () => {
-      const todoTitle: string = firstTask;
+      const todoTitle: string = testData[0];
       setTodoComplete(todoTitle);
       verifyTodoItemIsCompleted(todoTitle);
       verifyNumberOfLeftItems(initialListLength - 1);
-      verifyTodoListInView('Completed', [`${todoTitle}`]);
+      verifyTodoListInView(FILTER_COMPLETED, [`${todoTitle}`]);
     });
 
     it('marking a todo item as incompleted', () => {
-      const todoTitle: string = firstTask;
+      const todoTitle: string = testData[0];
       setTodoComplete(todoTitle);
       setTodoIncomplete(todoTitle);
       verifyTodoItemIsIncomplete(todoTitle);
     });
 
     it('should move completed todo to "Completed" list', () => {
-      const todoTitle: string = firstTask;
+      const todoTitle: string = testData[0];
       setTodoComplete(todoTitle);
-      verifyTodoListInView('Completed', [todoTitle]);
-      verifyTodoListInView('All', [todoTitle]);
-      verifyTodoListNotInView('Active', [todoTitle]);
+      verifyTodoListInView(FILTER_COMPLETED, [todoTitle]);
+      verifyTodoListInView(FILTER_ALL, [todoTitle]);
+      verifyTodoListNotInView(FILTER_ACTIVE, [todoTitle]);
     });
 
     it('deleting a completed todo item', () => {
-      const todoTitle: string = secondTask;
+      const todoTitle: string = testData[1];
       setTodoComplete(todoTitle);
       clearCompletedTodos();
       verifyTodoItemDoesNotExist(todoTitle);
@@ -129,14 +138,6 @@ describe('ToDo MVC Tests', () => {
     cy.contains('.todo-list li', title).within(() => {
       cy.get('.destroy').click({ force: true });
     });
-  }
-
-  function getInitialListLength() {
-    cy.get('.todo-list li')
-      .its('length')
-      .then((length: number) => {
-        initialListLength = length;
-      });
   }
 
   function editTitleOfATodoItem(oldTitle: string, newTitle: string) {

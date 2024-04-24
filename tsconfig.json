@@ -4,7 +4,11 @@
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
-    "types": ["cypress"]
+    "types": ["cypress"],
+    "baseUrl": "./",
+    "paths": {
+      "@fixtures/*": ["cypress/fixtures/*"]
+    }
   },
   "include": ["cypress/e2e/**/*.ts"],
   "exclude": ["node_modules"]
