@@ -12,7 +12,28 @@ import {
   editTitleOfATodoItem,
   setTodoComplete,
   setTodoIncomplete,
+  verifySelectedClass,
 } from '@fixtures/todoManipulation';
+
+import {
+  verifyListLength,
+  verifyNumberOfLeftItems,
+  verifyPageUrl,
+} from '@fixtures/generalUtils';
+
+import {
+  verifyTodoItem,
+  verifyTodoItemDoesNotExist,
+  verifyTodoItemIsCompleted,
+  verifyTodoItemIsIncomplete,
+  verifyTodoListInView,
+  verifyTodoItemIsNotInSelectedList,
+} from '@fixtures/viewingTodoLists';
+
+import {
+  clearCompletedTodos,
+  verifyClearCompletedButtonIsAppaered,
+} from '@fixtures/clearCompletedUtils';
 
 describe('ToDo MVC Tests', () => {
   let testData: string[];
@@ -127,7 +148,7 @@ describe('ToDo MVC Tests', () => {
       setTodoComplete(todoTitle);
       verifyTodoListInView(FILTER_COMPLETED, [todoTitle]);
       verifyTodoListInView(FILTER_ALL, [todoTitle]);
-      verifyTodoListNotInView(FILTER_ACTIVE, [todoTitle]);
+      verifyTodoItemIsNotInSelectedList(FILTER_ACTIVE, [todoTitle]);
     });
 
     it('deleting a completed todo item', () => {
@@ -137,63 +158,4 @@ describe('ToDo MVC Tests', () => {
       verifyTodoItemDoesNotExist(todoTitle);
     });
   });
-
-  //helper functions
-  function clearCompletedTodos() {
-    cy.contains('Clear completed').click();
-  }
-
-  function verifyNumberOfLeftItems(expectedCount: number) {
-    cy.get('.todo-count strong').should('have.text', expectedCount);
-  }
-
-  function verifyTodoItem(title: string) {
-    cy.get('.todo-list').should('contain.text', title);
-  }
-
-  function verifyPageUrl(expectedUrl: string) {
-    cy.url().should('include', expectedUrl);
-  }
-
-  function verifyListLength(expectedLength: number) {
-    cy.get('.todo-list li').should('have.length', expectedLength);
-  }
-
-  function verifySelectedClass(filterName: string) {
-    cy.contains('.filters li a', filterName).should('have.class', 'selected');
-  }
-
-  function verifyTodoItemDoesNotExist(title: string) {
-    cy.get('.todo-list').should('not.contain', title);
-  }
-
-  function verifyTodoItemIsCompleted(title: string) {
-    cy.contains('.todo-list li.completed', title).should('exist');
-  }
-
-  function verifyTodoItemIsIncomplete(title: string) {
-    cy.contains('.todo-list li', title).should('exist');
-    cy.contains('.todo-list li.completed', title).should('not.exist');
-  }
-
-  function verifyTodoListInView(viewName: string, expectedTodoItems: string[]) {
-    cy.contains(viewName).click();
-    expectedTodoItems.forEach((todoItem) => {
-      verifyTodoItem(todoItem);
-    });
-  }
-
-  function verifyTodoListNotInView(
-    viewName: string,
-    notExpectedTodoItems: string[]
-  ) {
-    cy.contains(viewName).click();
-    notExpectedTodoItems.forEach((todoItem) => {
-      verifyTodoItemDoesNotExist(todoItem);
-    });
-  }
-
-  function verifyClearCompletedButtonIsAppaered() {
-    cy.contains('Clear completed').should('be.visible');
-  }
 });
