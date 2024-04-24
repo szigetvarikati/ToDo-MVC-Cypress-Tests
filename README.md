@@ -87,7 +87,7 @@ Follow the guide below to install and run the application.
    ```sh
    npx cypress open
    ```
-2. Run tests in the Cypress applicaion that opens, select the spec.cy.ts file and click to run the tests.
+2. Run tests in the Cypress applicaion that opens, select E2E Testing, then select a browser (for example: Chrome ) then select the spec.cy.ts file and click to run the tests.
 3. Or run tests from terminal with the following command:
    ```sh
    npy cypress run
